@@ -2,8 +2,8 @@ project:
   type: book
 
 book:
-  title: "developing-a-data-pipeline"
-  author: "Norah Jones"
+  title: Developing a Data Pipeline
+  subtitle: MACEPA Data Fellowship - Training Materials
   date: "12/2/2024"
   chapters:
     - index.qmd
@@ -15,9 +15,14 @@ bibliography: references.bib
 
 format:
   html:
-    theme: cosmo
+    theme:
+    - cosmo
+    - custom.scss
+    template-partials: title-block.html
+    css: include/webex.css
+    include-after-body: include/webex.js
+    embed-resources: true 
   pdf:
     documentclass: scrreprt
-
 editor: visual
 

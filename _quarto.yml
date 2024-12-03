@@ -4,7 +4,6 @@ project:
 book:
   title: Developing a Data Pipeline
   subtitle: MACEPA Data Fellowship - Training Materials
-  date: "12/2/2024"
   chapters:
     - index.qmd
     - intro.qmd

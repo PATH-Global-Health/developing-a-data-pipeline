@@ -6,7 +6,7 @@ book:
   subtitle: MACEPA Data Fellowship - Training Materials
   chapters:
     - index.qmd
-    - intro.qmd
+    - missingness.qmd
     - summary.qmd
     - references.qmd
 

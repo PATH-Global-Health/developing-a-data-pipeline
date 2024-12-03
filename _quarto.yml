@@ -2,8 +2,8 @@ project:
   type: book
 
 book:
-  title: Developing a Data Pipeline
-  subtitle: MACEPA Data Fellowship - Training Materials
+  title: "Developing a Data Pipeline"
+  subtitle: "MACEPA Data Fellowship - Training Materials"
   chapters:
     - index.qmd
     - intro.qmd

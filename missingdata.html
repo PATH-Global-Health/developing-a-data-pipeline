@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Developing a Data Pipeline - 2&nbsp; Missing Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="include/webex.css">
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Developing a Data Pipeline</a> 
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./missingdata.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#reviewing-data-completeness" id="toc-reviewing-data-completeness" class="nav-link active" data-scroll-target="#reviewing-data-completeness"> <span class="header-section-number">2.1</span> Reviewing data completeness</a></li>
+  <li><a href="#nas-or-zeroes" id="toc-nas-or-zeroes" class="nav-link" data-scroll-target="#nas-or-zeroes"> <span class="header-section-number">2.2</span> NAs or zeroes?</a></li>
+  <li><a href="#different-levels-of-completeness-in-numerators-and-denominators" id="toc-different-levels-of-completeness-in-numerators-and-denominators" class="nav-link" data-scroll-target="#different-levels-of-completeness-in-numerators-and-denominators"> <span class="header-section-number">2.3</span> Different levels of completeness in numerators and denominators</a></li>
+  <li><a href="#restricting-data-based-on-completeness" id="toc-restricting-data-based-on-completeness" class="nav-link" data-scroll-target="#restricting-data-based-on-completeness"> <span class="header-section-number">2.4</span> Restricting data based on completeness</a></li>
+  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice"> <span class="header-section-number">2.5</span> Practice</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<img src="PATH_Logo_Color.png" width="150px">
+<div style="padding-top: 20px; padding-bottom: 20px;" <="" div="">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+    
+  </div>
+  
+
+</div></header>
+
+<p><em>Objectives: In this lesson, you’ll learn how to</em> <em>review data for completeness, identify possible zeroes coded as NAs, and restrict data based on completeness.</em></p>
+<p>Routine data typically has some missingness and, often, then some. In order to make valid comparisons across time and space, it’s important to understand when and where our data are available. Complicating the process of identifying gaps in our data, many DHIS2 instances do not provide zeroes, instead reporting them as NAs. This lesson covers methods for reviewing missing values, replacing NAs with zeroes where possible, and restricting data in order to make inferences.</p>
+<section id="reviewing-data-completeness" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="reviewing-data-completeness"><span class="header-section-number">2.1</span> Reviewing data completeness</h2>
+<p>First, we’ll revisit a toy data set of malaria cases and hospitalizations for 5 health facilities across three regions for 2015-2019. We’ll add catchment populations and malaria deaths and introduce some missingness. For this exercise, we’ll assume no population growth or loss.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>malaria_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">uid =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Hnd7FjkO9"</span>,<span class="st">"1Yud8rt9s"</span>, <span class="st">"PLd3j2ncr"</span>,<span class="st">"LJn8gzrq2"</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">"G5KNp94mL"</span>), <span class="at">each =</span> <span class="dv">5</span>),</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">region =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Central"</span>, <span class="st">"Central"</span>, <span class="st">"Northern"</span>, <span class="st">"Southern"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                                         <span class="cn">NA</span>), <span class="at">each =</span> <span class="dv">5</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">year =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">2015</span><span class="sc">:</span><span class="dv">2019</span>), <span class="at">times =</span> <span class="dv">5</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">cases =</span> <span class="fu">c</span>(<span class="dv">97</span>, <span class="dv">99</span>, <span class="dv">28</span>, <span class="dv">162</span>, <span class="dv">128</span>, <span class="dv">28</span>, <span class="dv">102</span>, <span class="dv">111</span>, <span class="dv">182</span>, <span class="dv">23</span>, <span class="dv">45</span>, <span class="dv">56</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                    <span class="dv">133</span>, <span class="dv">121</span>, <span class="dv">160</span>, <span class="dv">88</span>, <span class="dv">80</span>, <span class="dv">197</span>,  <span class="dv">35</span>, <span class="dv">160</span>, <span class="dv">185</span>, <span class="dv">184</span>, <span class="dv">164</span>, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                    <span class="dv">25</span>, <span class="dv">188</span>), </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">hosp =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">10</span>, <span class="dv">2</span>, <span class="dv">9</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="cn">NA</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                   <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">10</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">4</span>, <span class="dv">3</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">deaths =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                                     <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="dv">1</span>),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                          <span class="at">pop =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1056</span>, <span class="dv">3029</span>, <span class="dv">9832</span>, <span class="dv">1039</span>), <span class="at">each =</span> <span class="dv">5</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we summarize the data, we notice the year and case data are complete. The hospitalization and population data have some missingness, and the death data are almost completely missing. While it’s not obvious from <code>summary()</code> , there’s also missingness in the region variable, which we can see using <code>colSums(is.na())</code>, a count of missing observations for each variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(malaria_dat) <span class="co">#Review data</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     uid               region               year          cases      
+ Length:25          Length:25          Min.   :2015   Min.   : 23.0  
+ Class :character   Class :character   1st Qu.:2016   1st Qu.: 56.0  
+ Mode  :character   Mode  :character   Median :2017   Median :111.0  
+                                       Mean   :2017   Mean   :111.2  
+                                       3rd Qu.:2018   3rd Qu.:162.0  
+                                       Max.   :2019   Max.   :197.0  
+                                                                     
+      hosp            deaths        pop      
+ Min.   : 2.000   Min.   :1    Min.   :1039  
+ 1st Qu.: 4.000   1st Qu.:1    1st Qu.:1052  
+ Median : 5.500   Median :1    Median :2042  
+ Mean   : 5.667   Mean   :1    Mean   :3739  
+ 3rd Qu.: 8.000   3rd Qu.:1    3rd Qu.:4730  
+ Max.   :10.000   Max.   :1    Max.   :9832  
+ NA's   :1        NA's   :18   NA's   :5     </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(malaria_dat)) <span class="co">#Review missingness counts in each column</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   uid region   year  cases   hosp deaths    pop 
+     0      5      0      0      1     18      5 </code></pre>
+</div>
+</div>
+</section>
+<section id="nas-or-zeroes" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="nas-or-zeroes"><span class="header-section-number">2.2</span> NAs or zeroes?</h2>
+<p>As noted above, the death data are mostly NA, the hospitalization data contain an NA, and there are no zero values in the data set. Once we’ve confirmed that zeroes are stored as NAs (by asking a knowledgeable source), we need to figure out which NAs were likely reported zeroes and which non-reporting. Let’s review the data more carefully by creating time series plots for each facility. We’ll depict missing hospitalizations in red.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(malaria_dat) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> . <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(hosp)), <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> <span class="sc">-</span><span class="dv">3</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> cases, <span class="at">color =</span> <span class="st">"cases"</span>)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> hosp, <span class="at">color =</span> <span class="st">"hospitalizations"</span>)) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> deaths, <span class="at">color =</span> <span class="st">"deaths"</span>)) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  ggforce<span class="sc">::</span><span class="fu">facet_wrap_paginate</span>(.<span class="sc">~</span>uid) <span class="sc">+</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 18 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="missingdata_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>If we know that hospitalization and death data are reported together, we may be able to assume that facilities actually reported zero deaths, i.e., that the data are not missing, so long as the facilities reported malaria hospitalizations that year. In our example, that would mean we set all deaths to zero except for at LJn8gzrq2 in 2017, when hospitalization and death data were both missing.</p>
+<p>At health facilities that rarely see hospitalizations or deaths, you might assume NAs for both indicators are zeroes. However, at a facility like LJn8gzrq2, where hospitalizations are regularly recorded in low numbers, you might not. What would you do in this instance? Missing data assumptions are often a judgement call. Getting someone’s thoughts who is familiar with the context is always a good idea and can help you refine your assumptions.</p>
+<p>In you own work, your data will likely include additional data elements. You may be able to create a rule, such as, “If the number all-cause admissions (or malaria tests) is greater than 0 in a given month, assume the number of malaria admissions is actually zero if NA.” Similarly, for outpatient data, if the number of tests administered is greater than zero but cases are NA, you may be able to assume there were zero confirmed cases. Whatever you assume, be sure to confirm your assumptions are reasonable with someone who’s familiar with the context, and state your assumptions when reporting.</p>
+</section>
+<section id="different-levels-of-completeness-in-numerators-and-denominators" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="different-levels-of-completeness-in-numerators-and-denominators"><span class="header-section-number">2.3</span> Different levels of completeness in numerators and denominators</h2>
+<p>Missingness can significantly impact our findings, so it’s important to account for it before we summarize, model, or report data. One of the most common problems we encounter with missing data arises when we evaluate incidence rates. Often, facility data is missing case counts or a catchment population estimate, but not necessarily both. If we calculate a region (or district)-wide incidence rate, our estimate might be substantially off if several facilities don’t have both population estimates and case counts.</p>
+<p>In our data set, facility Hnd7FjkO9 is missing population data. We can calculate incidence rates for Central region, both including and excluding this facility. First, we’ll subset our data to Central. Then, we’ll calculate the 5-year annualized (average) incidence rate per 1000, including 1) all facilities and 2) only facilities with complete case and population data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>malaria_dat_central <span class="ot">=</span> malaria_dat <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(region<span class="sc">==</span><span class="st">"Central"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>malaria_dat_central <span class="sc">%&gt;%</span> <span class="co">#Calculate incidence using data from facilities with missing data</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">incidence =</span> <span class="fu">sum</span>(cases, <span class="at">na.rm =</span> T)<span class="sc">/</span><span class="fu">sum</span>(pop, <span class="at">na.rm =</span> T)<span class="sc">*</span><span class="dv">1000</span><span class="sc">/</span><span class="dv">5</span>) <span class="co">#Ignore NAs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  incidence
+1  36.36364</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>malaria_dat_central <span class="sc">%&gt;%</span> <span class="co">#Calculate incidence using data from facilities removing rows with missing data</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(cases), <span class="sc">!</span><span class="fu">is.na</span>(pop)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">incidence =</span> <span class="fu">sum</span>(cases, <span class="at">na.rm =</span> T)<span class="sc">/</span><span class="fu">sum</span>(pop, <span class="at">na.rm =</span> T)<span class="sc">*</span><span class="dv">1000</span><span class="sc">/</span><span class="dv">5</span>) <span class="co">#Divide by 5 to annualize.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  incidence
+1  16.89394</code></pre>
+</div>
+</div>
+<p>If we include all facilities, the incidence rate is over 2 times higher than if we restrict to facilities with complete data. This is because in the first instance, we’ve considered all cases in the Region while only considering the population residing in one of two catchment areas, i.e., our numerator and denominator don’t cover the same areas. In the second instance, the numerator and denominator do cover the same area. It’s generally best to restrict to observations where data are complete when calculating summaries (or regression modeling). However, in our example, we’d end up removing 50% of facilities!</p>
+<p>Before you throw out half your data, consider your alternatives. Can you use a regional population estimate that’s reported elsewhere for the denominator instead of using the sum of the facilities’ catchment populations? Do you have access to population data for Hnd7FjkO9 for a different year, perhaps 2020, that you can use to create estimates for earlier years? Is it possible that you can report cases instead of incidence rates?</p>
+</section>
+<section id="restricting-data-based-on-completeness" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="restricting-data-based-on-completeness"><span class="header-section-number">2.4</span> Restricting data based on completeness</h2>
+<p>You may find yourself in a situation where your data is largely missing and there isn’t much you can do. When this occurs, summarizing your data or making wider inferences about epidemiological patterns may not be appropriate. While we can calculate an incidence rate for Central Region with only one facility, we probably shouldn’t. It’s possible that the missing facility may serve most of the region’s population and have different trends from the facility with complete data, leading us to misestimate incidence for the region.</p>
+<p>It’s common to set a threshold for how much missingness you’re willing to accept. For example, many people exclude all facilities that don’t report data during at least 80% of the follow-up period. Similarly, you might not create district or regional summaries without data from at least 80% of facilities. As before, the decisions you make are judgement calls and should be informed by the specific questions you’re trying to answer and any relevant contextual information.</p>
+</section>
+<section id="practice" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="practice"><span class="header-section-number">2.5</span> Practice</h2>
+<p>Exercise 1. Calculate the annual rate of malaria deaths using the population at each facility in <code>malaria_dat</code>. Which facility-years were you unable to calculate rates for, and why? Could you make different assumptions that would allow you to calculate rates for these years?</p>
+<p>Exercise 2. Replace the case and hospitalization variables in your data using the following code: <code>set.seed(0)</code> then <code>malaria_dat2 = malaria_dat %&gt;% group_by(uid) %&gt;% mutate(cases =round(rnorm(5, cur_group_id()^2*30, sd = cur_group_id()^2*10)), hosp = round(rnorm(5, mean(cases)/33, sd = sd(cases/33)))) %&gt;% ungroup() %&gt;% mutate(hosp = ifelse(row_number() %in% c(1,7,9,13,16,22,25), NA, hosp))</code>. Review the new data, and create a rule for setting hospitalizations and deaths to zero. What assumptions did you make? Recode suspected zeroes as zero.</p>
+<p>Exercise 3. You’ve discovered that the 2020 population for facility Hnd7FjkO9 is 15,000 and has been growing 2.6% annually. Calculate the population estimates for 2015 through 2019, then calculate the annual incidence rates for Central Region.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

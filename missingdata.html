@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Developing a Data Pipeline - 2&nbsp; Missing Data</title>
+<title>Developing a Data Pipeline - 1&nbsp; Missing Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -88,7 +88,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./references.html" rel="next">
 <link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -129,7 +128,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -154,17 +153,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Developing a Data Pipeline Module</a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./missingdata.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">References</a>
+  <a href="./missingdata.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Missing Data</span></a>
   </div>
 </li>
     </ul>
@@ -176,11 +170,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#reviewing-data-completeness" id="toc-reviewing-data-completeness" class="nav-link active" data-scroll-target="#reviewing-data-completeness"> <span class="header-section-number">2.1</span> Reviewing data completeness</a></li>
-  <li><a href="#nas-or-zeroes" id="toc-nas-or-zeroes" class="nav-link" data-scroll-target="#nas-or-zeroes"> <span class="header-section-number">2.2</span> NAs or zeroes?</a></li>
-  <li><a href="#different-levels-of-completeness-in-numerators-and-denominators" id="toc-different-levels-of-completeness-in-numerators-and-denominators" class="nav-link" data-scroll-target="#different-levels-of-completeness-in-numerators-and-denominators"> <span class="header-section-number">2.3</span> Different levels of completeness in numerators and denominators</a></li>
-  <li><a href="#restricting-data-based-on-completeness" id="toc-restricting-data-based-on-completeness" class="nav-link" data-scroll-target="#restricting-data-based-on-completeness"> <span class="header-section-number">2.4</span> Restricting data based on completeness</a></li>
-  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice"> <span class="header-section-number">2.5</span> Practice</a></li>
+  <li><a href="#reviewing-data-completeness" id="toc-reviewing-data-completeness" class="nav-link active" data-scroll-target="#reviewing-data-completeness"> <span class="header-section-number">1.1</span> Reviewing data completeness</a></li>
+  <li><a href="#nas-or-zeroes" id="toc-nas-or-zeroes" class="nav-link" data-scroll-target="#nas-or-zeroes"> <span class="header-section-number">1.2</span> NAs or zeroes?</a></li>
+  <li><a href="#different-levels-of-completeness-in-numerators-and-denominators" id="toc-different-levels-of-completeness-in-numerators-and-denominators" class="nav-link" data-scroll-target="#different-levels-of-completeness-in-numerators-and-denominators"> <span class="header-section-number">1.3</span> Different levels of completeness in numerators and denominators</a></li>
+  <li><a href="#restricting-data-based-on-completeness" id="toc-restricting-data-based-on-completeness" class="nav-link" data-scroll-target="#restricting-data-based-on-completeness"> <span class="header-section-number">1.4</span> Restricting data based on completeness</a></li>
+  <li><a href="#practice" id="toc-practice" class="nav-link" data-scroll-target="#practice"> <span class="header-section-number">1.5</span> Practice</a></li>
   </ul>
 </nav>
     </div>
@@ -191,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <img src="PATH_Logo_Color.png" width="150px">
 <div style="padding-top: 20px; padding-bottom: 20px;" <="" div="">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Missing Data</span></h1>
 </div>
 
 
@@ -207,8 +201,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <p><em>Objectives: In this lesson, you’ll learn how to</em> <em>review data for completeness, identify possible zeroes coded as NAs, and restrict data based on completeness.</em></p>
 <p>Routine data typically has some missingness and, often, then some. In order to make valid comparisons across time and space, it’s important to understand when and where our data are available. Complicating the process of identifying gaps in our data, many DHIS2 instances do not provide zeroes, instead reporting them as NAs. This lesson covers methods for reviewing missing values, replacing NAs with zeroes where possible, and restricting data in order to make inferences.</p>
-<section id="reviewing-data-completeness" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="reviewing-data-completeness"><span class="header-section-number">2.1</span> Reviewing data completeness</h2>
+<section id="reviewing-data-completeness" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="reviewing-data-completeness"><span class="header-section-number">1.1</span> Reviewing data completeness</h2>
 <p>First, we’ll revisit a toy data set of malaria cases and hospitalizations for 5 health facilities across three regions for 2015-2019. We’ll add catchment populations and malaria deaths and introduce some missingness. For this exercise, we’ll assume no population growth or loss.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  </span>
@@ -254,8 +248,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="nas-or-zeroes" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="nas-or-zeroes"><span class="header-section-number">2.2</span> NAs or zeroes?</h2>
+<section id="nas-or-zeroes" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="nas-or-zeroes"><span class="header-section-number">1.2</span> NAs or zeroes?</h2>
 <p>As noted above, the death data are mostly NA, the hospitalization data contain an NA, and there are no zero values in the data set. Once we’ve confirmed that zeroes are stored as NAs (by asking a knowledgeable source), we need to figure out which NAs were likely reported zeroes and which non-reporting. Let’s review the data more carefully by creating time series plots for each facility. We’ll depict missing hospitalizations in red.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(malaria_dat) <span class="sc">+</span></span>
@@ -277,8 +271,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>At health facilities that rarely see hospitalizations or deaths, you might assume NAs for both indicators are zeroes. However, at a facility like LJn8gzrq2, where hospitalizations are regularly recorded in low numbers, you might not. What would you do in this instance? Missing data assumptions are often a judgement call. Getting someone’s thoughts who is familiar with the context is always a good idea and can help you refine your assumptions.</p>
 <p>In you own work, your data will likely include additional data elements. You may be able to create a rule, such as, “If the number all-cause admissions (or malaria tests) is greater than 0 in a given month, assume the number of malaria admissions is actually zero if NA.” Similarly, for outpatient data, if the number of tests administered is greater than zero but cases are NA, you may be able to assume there were zero confirmed cases. Whatever you assume, be sure to confirm your assumptions are reasonable with someone who’s familiar with the context, and state your assumptions when reporting.</p>
 </section>
-<section id="different-levels-of-completeness-in-numerators-and-denominators" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="different-levels-of-completeness-in-numerators-and-denominators"><span class="header-section-number">2.3</span> Different levels of completeness in numerators and denominators</h2>
+<section id="different-levels-of-completeness-in-numerators-and-denominators" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="different-levels-of-completeness-in-numerators-and-denominators"><span class="header-section-number">1.3</span> Different levels of completeness in numerators and denominators</h2>
 <p>Missingness can significantly impact our findings, so it’s important to account for it before we summarize, model, or report data. One of the most common problems we encounter with missing data arises when we evaluate incidence rates. Often, facility data is missing case counts or a catchment population estimate, but not necessarily both. If we calculate a region (or district)-wide incidence rate, our estimate might be substantially off if several facilities don’t have both population estimates and case counts.</p>
 <p>In our data set, facility Hnd7FjkO9 is missing population data. We can calculate incidence rates for Central region, both including and excluding this facility. First, we’ll subset our data to Central. Then, we’ll calculate the 5-year annualized (average) incidence rate per 1000, including 1) all facilities and 2) only facilities with complete case and population data.</p>
 <div class="cell">
@@ -302,15 +296,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If we include all facilities, the incidence rate is over 2 times higher than if we restrict to facilities with complete data. This is because in the first instance, we’ve considered all cases in the Region while only considering the population residing in one of two catchment areas, i.e., our numerator and denominator don’t cover the same areas. In the second instance, the numerator and denominator do cover the same area. It’s generally best to restrict to observations where data are complete when calculating summaries (or regression modeling). However, in our example, we’d end up removing 50% of facilities!</p>
 <p>Before you throw out half your data, consider your alternatives. Can you use a regional population estimate that’s reported elsewhere for the denominator instead of using the sum of the facilities’ catchment populations? Do you have access to population data for Hnd7FjkO9 for a different year, perhaps 2020, that you can use to create estimates for earlier years? Is it possible that you can report cases instead of incidence rates?</p>
 </section>
-<section id="restricting-data-based-on-completeness" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="restricting-data-based-on-completeness"><span class="header-section-number">2.4</span> Restricting data based on completeness</h2>
+<section id="restricting-data-based-on-completeness" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="restricting-data-based-on-completeness"><span class="header-section-number">1.4</span> Restricting data based on completeness</h2>
 <p>You may find yourself in a situation where your data is largely missing and there isn’t much you can do. When this occurs, summarizing your data or making wider inferences about epidemiological patterns may not be appropriate. While we can calculate an incidence rate for Central Region with only one facility, we probably shouldn’t. It’s possible that the missing facility may serve most of the region’s population and have different trends from the facility with complete data, leading us to misestimate incidence for the region.</p>
 <p>It’s common to set a threshold for how much missingness you’re willing to accept. For example, many people exclude all facilities that don’t report data during at least 80% of the follow-up period. Similarly, you might not create district or regional summaries without data from at least 80% of facilities. As before, the decisions you make are judgement calls and should be informed by the specific questions you’re trying to answer and any relevant contextual information.</p>
 </section>
-<section id="practice" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="practice"><span class="header-section-number">2.5</span> Practice</h2>
+<section id="practice" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="practice"><span class="header-section-number">1.5</span> Practice</h2>
 <p>Exercise 1. Calculate the annual rate of malaria deaths using the population at each facility in <code>malaria_dat</code>. Which facility-years were you unable to calculate rates for, and why? Could you make different assumptions that would allow you to calculate rates for these years?</p>
-<p>Exercise 2. Replace the case and hospitalization variables in your data using the following code: <code>set.seed(0)</code> then <code>malaria_dat2 = malaria_dat %&gt;% group_by(uid) %&gt;% mutate(cases =round(rnorm(5, cur_group_id()^2*30, sd = cur_group_id()^2*10)), hosp = round(rnorm(5, mean(cases)/33, sd = sd(cases/33)))) %&gt;% ungroup() %&gt;% mutate(hosp = ifelse(row_number() %in% c(1,7,9,13,16,22,25), NA, hosp))</code>. Review the new data, and create a rule for setting hospitalizations and deaths to zero. What assumptions did you make? Recode suspected zeroes as zero.</p>
+<p>Exercise 2. Replace the case and hospitalization variables in your data using the following code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>malaria_dat2 <span class="ot">=</span> malaria_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(uid) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">cases =</span><span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="fu">cur_group_id</span>()<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="dv">30</span>, <span class="at">sd =</span> <span class="fu">cur_group_id</span>()<span class="sc">^</span><span class="dv">2</span><span class="sc">*</span><span class="dv">10</span>)), </span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">hosp =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="fu">mean</span>(cases)<span class="sc">/</span><span class="dv">33</span>, <span class="at">sd =</span> <span class="fu">sd</span>(cases<span class="sc">/</span><span class="dv">33</span>)))) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">hosp =</span> <span class="fu">ifelse</span>(<span class="fu">row_number</span>() <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">13</span>,<span class="dv">16</span>,<span class="dv">22</span>,<span class="dv">25</span>), <span class="cn">NA</span>, hosp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Review the new data, and create a rule for setting hospitalizations and deaths to zero. What assumptions did you make? Recode suspected zeroes as zero.</p>
 <p>Exercise 3. You’ve discovered that the 2020 population for facility Hnd7FjkO9 is 15,000 and has been growing 2.6% annually. Calculate the population estimates for 2015 through 2019, then calculate the annual incidence rates for Central Region.</p>
 
 
@@ -623,13 +628,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">index.html</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Developing a Data Pipeline Module</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./references.html" class="pagination-link">
-        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
